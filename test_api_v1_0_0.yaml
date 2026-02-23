@@ -1,0 +1,131 @@
+openapi: 3.0.1
+info:
+    title: My Outbound API
+    description: Some description
+    version: 1.0.1 Initial
+    contact:
+        name: Svilen Velikov
+        email: svilen.velikov@gmail.com
+
+
+servers:
+    -   url: https://myapp.com/getInfo/1/0/
+        description: Production Server URL
+
+
+tags:
+    - name: Get Info
+      description: >
+          Some description:
+            1. Description One
+            2. Description Two
+            3. Description Three
+
+paths:
+    /getInfo:
+        post:
+            tags:
+                - Get Info
+            description: some description
+            operationId: Get Info
+            requestBody:
+                $ref: '#/components/requestBodies/GetInfoRequest'
+            responses:
+                '200':
+                    $ref: '#/components/responses/GetInfoResponse'
+                default:
+                    $ref: '#/components/responses/ErrorsData'
+
+
+components:
+    requestBodies:
+        GetInfoRequest:
+            required: true
+            description: Contains the details of the request message.
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/GetInfoRequestSchema'
+
+
+    responses:
+        GetInfoResponse:
+            description: Contains the details of the response message.
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/GetInfoResponseSchema'
+
+        ErrorsData:
+            description: unexpected error
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/ErrorsResponse'
+
+
+    schemas:
+
+        # Get Info Request
+        GetInfoRequestSchema:
+            type: object
+            required:
+                - requestId
+            properties:
+                requestId:
+                    type: string
+                    description: The id of the request submitted. Max length - 64
+                    minLength: 1
+                    maxLength: 64
+                    example: "123456"
+                reason:
+                    type: string
+                    description: >
+                        Additional info related to reason of this request. Type; enum string. Must be one of; APPLE_PAY, GOOGLE_PAY, SAMSUNG_PAY, ISSUER_WALLET, SHOW_PAN, OTHER
+                        - ISSUER_WALLET - Card is requested for Issuer Wallet.
+                        - APPLE_PAY - Card is requested for adding to Apple Pay.
+                        - GOOGLE_PAY - Card is requested for adding to Google Pay.
+                        - SAMSUNG_PAY - Card is requested for adding to Samsung Pay.
+                        - SHOW_PAN - Card is requested by ITECO CD-CORE for read-only purposes.
+                        - OTHER - Other reason for retrieving card data.
+
+
+        # Get Info Response
+        GetInfoResponseSchema:
+            type: object
+            required:
+                - responseId
+            properties:
+                responseId:
+                    type: string
+                    description: The id of the response returned.
+                    minLength: 1
+                    maxLength: 64
+                    example: "123456"
+
+
+        # Error Response
+        ErrorsResponse:
+            required:
+                - responseId
+            type: object
+            properties:
+                responseId:
+                    type: string
+                    description: The id of the response returned.
+                    minLength: 1
+                    maxLength: 64
+                    example: "123456"
+                errorCode:
+                    type: string
+                    description: Error code for the reason the operation failed.Conditional – required if an error occurred performing
+                        the operation.
+                    minLength: 1
+                    maxLength: 32
+                    example: INVALID_CREDENTIALS_INVALID_JSON
+                errorDescription:
+                    type: string
+                    description: Error description of the reason the operation failed.
+                    minLength: 1
+                    maxLength: 256
+                    example: Invalid JSON
